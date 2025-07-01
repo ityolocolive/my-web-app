@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Code Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+  <h2>Scan a Google Maps QR Code</h2>
+  <div id="reader" style="width: 300px;"></div>
+  <script>
+    const sheetURL = "https://script.google.com/macros/s/AKfycbyanLH-swyqR7ylVpUcaPkbjxvAIB1CCXs4wv_B1Hqk-R16MAWy1katwLEK5XjGJxpaWQ/exec";
+
+    function sendToSheet(link) {
+      fetch(sheetURL, {
+        method: 'POST',
+        contentType: 'application/json',
+        body: JSON.stringify({
+          link: link,
+          device: navigator.userAgent
+        })
+      }).then(res => alert("Link logged: " + link));
+    }
+
+    function onScanSuccess(decodedText) {
+      if (decodedText.startsWith("https://maps.google.com") || decodedText.includes("goo.gl/maps")) {
+        sendToSheet(decodedText);
+      } else {
+        alert("Invalid Google Maps link");
+      }
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+      fps: 10,
+      qrbox: 250
+    });
+
+    html5QrcodeScanner.render(onScanSuccess);
+  </script>
+</body>
+</html>
